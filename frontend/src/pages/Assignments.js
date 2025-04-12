@@ -3,12 +3,16 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navigation from '../components/Navigation';
+import { FaSearch, FaFilePdf, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 const Assignments = () => {
   const [assignments, setAssignments] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredAssignments, setFilteredAssignments] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -31,6 +35,7 @@ const Assignments = () => {
       setLoading(true);
       const response = await axios.get(`http://localhost:5000/api/assignments${selectedGrade !== 'all' ? `?grade=${selectedGrade}` : ''}`);
       setAssignments(response.data);
+      setFilteredAssignments(response.data);
     } catch (error) {
       toast.error('Failed to fetch assignments');
       console.error('Error fetching assignments:', error);
@@ -42,6 +47,28 @@ const Assignments = () => {
   useEffect(() => {
     fetchAssignments();
   }, [fetchAssignments]);
+
+  useEffect(() => {
+    // Filter assignments based on search term
+    const filtered = assignments.filter(assignment =>
+      assignment.subject.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredAssignments(filtered);
+  }, [searchTerm, assignments]);
+
+  // Add effect to handle grade changes
+  useEffect(() => {
+    const filtered = assignments.filter(assignment => {
+      const subjectMatch = searchTerm 
+        ? assignment.subject.toLowerCase().includes(searchTerm.toLowerCase())
+        : true;
+      const gradeMatch = selectedGrade !== 'all' 
+        ? assignment.grade === selectedGrade 
+        : true;
+      return subjectMatch && gradeMatch;
+    });
+    setFilteredAssignments(filtered);
+  }, [selectedGrade, assignments, searchTerm]);
 
   const validateForm = () => {
     const errors = {};
@@ -166,6 +193,71 @@ const Assignments = () => {
     }
   };
 
+  const handleSearch = (e) => {
+    const searchValue = e.target.value;
+    setSearchTerm(searchValue);
+    
+    // Filter assignments based on subject and grade
+    const filtered = assignments.filter(assignment => {
+      const subjectMatch = searchValue 
+        ? assignment.subject.toLowerCase().includes(searchValue.toLowerCase())
+        : true;
+      const gradeMatch = selectedGrade !== 'all' 
+        ? assignment.grade === selectedGrade 
+        : true;
+      return subjectMatch && gradeMatch;
+    });
+    setFilteredAssignments(filtered);
+  };
+
+  const generateReport = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      // Use the current filtered assignments
+      const assignmentsToReport = filteredAssignments;
+
+      if (assignmentsToReport.length === 0) {
+        toast.error('No assignments found for the selected criteria');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:5000/api/assignments/report', {
+        responseType: 'blob',
+        params: {
+          subject: searchTerm || undefined,
+          grade: selectedGrade !== 'all' ? selectedGrade : undefined
+        }
+      });
+
+      if (!response.data) {
+        throw new Error('No data received from server');
+      }
+
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const filename = `assignments-report-${searchTerm || 'all'}-grade${selectedGrade !== 'all' ? selectedGrade : 'all'}-${new Date().toISOString().split('T')[0]}.pdf`;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Report generated successfully');
+    } catch (error) {
+      console.error('Error generating report:', error);
+      setError('Failed to generate report');
+      toast.error('Failed to generate report. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -176,6 +268,16 @@ const Assignments = () => {
             <p className="mt-2 text-gray-600">Manage and create assignments for your students</p>
           </div>
           <div className="flex space-x-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by subject..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+              <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            </div>
             <select
               value={selectedGrade}
               onChange={(e) => setSelectedGrade(e.target.value)}
@@ -187,16 +289,97 @@ const Assignments = () => {
               ))}
             </select>
             <button
+              onClick={generateReport}
+              className="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90"
+            >
+              <FaFilePdf />
+              <span>Generate Report</span>
+            </button>
+            <button
               onClick={() => setShowForm(true)}
               className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center space-x-2"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
+              <FaPlus />
               <span>Create Assignment</span>
             </button>
           </div>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        {loading && !showForm ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredAssignments.map(assignment => (
+              <div key={assignment._id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900">{assignment.title}</h3>
+                    <div className="flex space-x-2">
+                      {assignment.status === 'pending' && (
+                        <button
+                          onClick={() => handleMarkComplete(assignment._id)}
+                          className="text-green-500 hover:text-green-700 transition-colors"
+                          title="Mark as complete"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleEdit(assignment)}
+                        className="text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(assignment._id)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-6">{assignment.description}</p>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500">Grade:</span>
+                      <span className="ml-2 font-medium">Grade {assignment.grade}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Subject:</span>
+                      <span className="ml-2 font-medium">{assignment.subject}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Due Date:</span>
+                      <span className="ml-2 font-medium">{new Date(assignment.dueDate).toLocaleDateString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Total Marks:</span>
+                      <span className="ml-2 font-medium">{assignment.totalMarks}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Status:</span>
+                      <span className={`ml-2 font-medium ${
+                        assignment.status === 'completed' ? 'text-green-600' : 'text-yellow-600'
+                      }`}>
+                        {assignment.status === 'completed' ? 'Completed' : 'Pending Review'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -353,80 +536,6 @@ const Assignments = () => {
                 </div>
               </form>
             </div>
-          </div>
-        )}
-
-        {loading && !showForm ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {assignments.map(assignment => (
-              <div key={assignment._id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900">{assignment.title}</h3>
-                    <div className="flex space-x-2">
-                      {assignment.status === 'pending' && (
-                        <button
-                          onClick={() => handleMarkComplete(assignment._id)}
-                          className="text-green-500 hover:text-green-700 transition-colors"
-                          title="Mark as complete"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleEdit(assignment)}
-                        className="text-primary hover:text-primary/80 transition-colors"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(assignment._id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-6">{assignment.description}</p>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-500">Grade:</span>
-                      <span className="ml-2 font-medium">Grade {assignment.grade}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Subject:</span>
-                      <span className="ml-2 font-medium">{assignment.subject}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Due Date:</span>
-                      <span className="ml-2 font-medium">{new Date(assignment.dueDate).toLocaleDateString()}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Total Marks:</span>
-                      <span className="ml-2 font-medium">{assignment.totalMarks}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Status:</span>
-                      <span className={`ml-2 font-medium ${
-                        assignment.status === 'completed' ? 'text-green-600' : 'text-yellow-600'
-                      }`}>
-                        {assignment.status === 'completed' ? 'Completed' : 'Pending Review'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         )}
       </div>

@@ -5,7 +5,7 @@ import Navigation from '../components/Navigation';
 const Home = () => {
   return (
     <div className="min-h-screen">
-      <Navigation />
+      
 
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-primary to-secondary">

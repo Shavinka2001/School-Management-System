@@ -101,51 +101,73 @@ exports.deleteAssignment = async (req, res) => {
 // Generate teacher report
 exports.generateReport = async (req, res) => {
   try {
-    const assignments = await Assignment.find().sort({ createdAt: -1 });
+    const { subject, grade } = req.query;
+    const query = {};
     
-    // Create a PDF document
+    if (subject) {
+      query.subject = new RegExp(subject, 'i');
+    }
+    if (grade) {
+      query.grade = grade;
+    }
+    
+    const assignments = await Assignment.find(query).sort({ createdAt: -1 });
+    
     const doc = new PDFDocument();
     
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=teacher-report.pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=assignments-report-${subject || 'all'}-grade${grade || 'all'}.pdf`);
     
-    // Pipe the PDF to the response
     doc.pipe(res);
-    
-    // Add content to the PDF
-    doc.fontSize(20).text('Teacher Report', { align: 'center' });
+
+    // Add content to PDF
+    doc.fontSize(20).text('Assignments Report', { align: 'center' });
     doc.moveDown();
     
-    // Add stats section
-    doc.fontSize(16).text('Statistics', { underline: true });
-    doc.moveDown();
-    
-    const totalAssignments = assignments.length;
-    const completedAssignments = assignments.filter(a => a.status === 'completed').length;
-    const pendingAssignments = assignments.filter(a => a.status === 'pending').length;
-    
-    doc.fontSize(12).text(`Total Assignments: ${totalAssignments}`);
-    doc.text(`Completed Assignments: ${completedAssignments}`);
-    doc.text(`Pending Assignments: ${pendingAssignments}`);
-    doc.moveDown();
-    
-    // Add assignments list
-    doc.fontSize(16).text('Assignments List', { underline: true });
-    doc.moveDown();
-    
-    assignments.forEach((assignment, index) => {
-      doc.fontSize(12).text(`${index + 1}. ${assignment.title}`);
-      doc.fontSize(10).text(`   Grade: ${assignment.grade}`);
-      doc.text(`   Subject: ${assignment.subject}`);
-      doc.text(`   Due Date: ${new Date(assignment.dueDate).toLocaleDateString()}`);
-      doc.text(`   Status: ${assignment.status === 'completed' ? 'Completed' : 'Pending Review'}`);
+    // Add filter information
+    if (subject || grade) {
+      doc.fontSize(14).text('Filter Criteria:', { align: 'center' });
+      if (subject) {
+        doc.fontSize(12).text(`Subject: ${subject}`, { align: 'center' });
+      }
+      if (grade) {
+        doc.fontSize(12).text(`Grade: ${grade}`, { align: 'center' });
+      }
       doc.moveDown();
-    });
-    
-    // Finalize the PDF
+    }
+
+    if (assignments.length === 0) {
+      doc.fontSize(12).text('No assignments found for the selected criteria.');
+    } else {
+      doc.fontSize(12).text(`Total Assignments: ${assignments.length}`);
+      doc.moveDown();
+      
+      assignments.forEach(assignment => {
+        doc.fontSize(12)
+          .text(`Title: ${assignment.title}`)
+          .text(`Subject: ${assignment.subject}`)
+          .text(`Grade: ${assignment.grade}`)
+          .text(`Due Date: ${new Date(assignment.dueDate).toLocaleDateString()}`)
+          .text(`Status: ${assignment.status}`)
+          .text(`Total Marks: ${assignment.totalMarks}`)
+          .moveDown();
+      });
+    }
+
     doc.end();
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error generating report:', error);
+    res.status(500).json({ message: 'Error generating report' });
   }
+};
+
+module.exports = {
+  getAssignments,
+  getTeacherStats,
+  getAssignment,
+  createAssignment,
+  updateAssignment,
+  deleteAssignment,
+  generateReport
 }; 
