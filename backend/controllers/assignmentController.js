@@ -101,73 +101,103 @@ exports.deleteAssignment = async (req, res) => {
 // Generate teacher report
 exports.generateReport = async (req, res) => {
   try {
-    const { subject, grade } = req.query;
-    const query = {};
+    const assignments = await Assignment.find().sort({ createdAt: -1 });
     
-    if (subject) {
-      query.subject = new RegExp(subject, 'i');
-    }
-    if (grade) {
-      query.grade = grade;
-    }
-    
-    const assignments = await Assignment.find(query).sort({ createdAt: -1 });
-    
+    // Create a PDF document
     const doc = new PDFDocument();
     
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=assignments-report-${subject || 'all'}-grade${grade || 'all'}.pdf`);
+    res.setHeader('Content-Disposition', 'attachment; filename=teacher-report.pdf');
     
+    // Pipe the PDF to the response
     doc.pipe(res);
-
-    // Add content to PDF
-    doc.fontSize(20).text('Assignments Report', { align: 'center' });
+    
+    // Add content to the PDF
+    doc.fontSize(20).text('Teacher Report', { align: 'center' });
     doc.moveDown();
     
-    // Add filter information
-    if (subject || grade) {
-      doc.fontSize(14).text('Filter Criteria:', { align: 'center' });
-      if (subject) {
-        doc.fontSize(12).text(`Subject: ${subject}`, { align: 'center' });
-      }
-      if (grade) {
-        doc.fontSize(12).text(`Grade: ${grade}`, { align: 'center' });
-      }
+    // Add stats section
+    doc.fontSize(16).text('Statistics', { underline: true });
+    doc.moveDown();
+    
+    const totalAssignments = assignments.length;
+    const completedAssignments = assignments.filter(a => a.status === 'completed').length;
+    const pendingAssignments = assignments.filter(a => a.status === 'pending').length;
+    
+    doc.fontSize(12).text(`Total Assignments: ${totalAssignments}`);
+    doc.text(`Completed Assignments: ${completedAssignments}`);
+    doc.text(`Pending Assignments: ${pendingAssignments}`);
+    doc.moveDown();
+    
+    // Add assignments list
+    doc.fontSize(16).text('Assignments List', { underline: true });
+    doc.moveDown();
+    
+    assignments.forEach((assignment, index) => {
+      doc.fontSize(12).text(`${index + 1}. ${assignment.title}`);
+      doc.fontSize(10).text(`   Grade: ${assignment.grade}`);
+      doc.text(`   Subject: ${assignment.subject}`);
+      doc.text(`   Due Date: ${new Date(assignment.dueDate).toLocaleDateString()}`);
+      doc.text(`   Status: ${assignment.status === 'completed' ? 'Completed' : 'Pending Review'}`);
       doc.moveDown();
-    }
-
-    if (assignments.length === 0) {
-      doc.fontSize(12).text('No assignments found for the selected criteria.');
-    } else {
-      doc.fontSize(12).text(`Total Assignments: ${assignments.length}`);
-      doc.moveDown();
-      
-      assignments.forEach(assignment => {
-        doc.fontSize(12)
-          .text(`Title: ${assignment.title}`)
-          .text(`Subject: ${assignment.subject}`)
-          .text(`Grade: ${assignment.grade}`)
-          .text(`Due Date: ${new Date(assignment.dueDate).toLocaleDateString()}`)
-          .text(`Status: ${assignment.status}`)
-          .text(`Total Marks: ${assignment.totalMarks}`)
-          .moveDown();
-      });
-    }
-
+    });
+    
+    // Finalize the PDF
     doc.end();
   } catch (error) {
-    console.error('Error generating report:', error);
-    res.status(500).json({ message: 'Error generating report' });
+    res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = {
-  getAssignments,
-  getTeacherStats,
-  getAssignment,
-  createAssignment,
-  updateAssignment,
-  deleteAssignment,
-  generateReport
+// Generate gamified activity
+exports.generateGamifiedActivity = async (req, res) => {
+  try {
+    const { subject, title } = req.body;
+
+    // Basic gamification ideas based on subject
+    const gamificationIdeas = {
+      math: [
+        "Create a treasure hunt where students solve math problems to find the next clue",
+        "Design a board game where players advance by solving equations",
+        "Organize a math olympics with different problem-solving challenges"
+      ],
+      science: [
+        "Create a virtual lab experiment with real-world applications",
+        "Design a science-themed escape room with experiments as puzzles",
+        "Organize a science fair with interactive demonstrations"
+      ],
+      english: [
+        "Create a story-building game where each student adds a paragraph",
+        "Design a vocabulary bingo game with creative writing challenges",
+        "Organize a poetry slam with different themes and styles"
+      ],
+      history: [
+        "Create a time-travel adventure where students solve historical mysteries",
+        "Design a historical figure trading card game",
+        "Organize a historical reenactment with role-playing elements"
+      ],
+      default: [
+        "Create a quiz show format with teams competing for points",
+        "Design a scavenger hunt related to the topic",
+        "Organize a debate competition with different perspectives"
+      ]
+    };
+
+    // Get random idea based on subject
+    const ideas = gamificationIdeas[subject.toLowerCase()] || gamificationIdeas.default;
+    const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
+
+    res.json({
+      success: true,
+      idea: randomIdea,
+      subject,
+      title
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 }; 

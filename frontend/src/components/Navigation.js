@@ -1,143 +1,113 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FaHome, FaUserGraduate, FaChalkboardTeacher, FaEnvelope, FaInfoCircle } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
 
-  const isActive = (path) => {
-    return location.pathname === path;
+  useEffect(() => {
+    // Check authentication status
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const type = localStorage.getItem('userType');
+    setIsLoggedIn(loggedIn);
+    setUserType(type);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userType');
+    setIsLoggedIn(false);
+    setUserType(null);
+    navigate('/login');
   };
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-2xl font-bold text-primary">
-                Smart School
-              </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link
-                to="/"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/')
-                    ? 'border-primary text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                <FaHome className="mr-2" />
-                Home
-              </Link>
-              <Link
-                to="/students"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/students')
-                    ? 'border-primary text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                <FaUserGraduate className="mr-2" />
-                Students
-              </Link>
-              <Link
-                to="/login"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/login')
-                    ? 'border-primary text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                <FaChalkboardTeacher className="mr-2" />
-                Teacher
-              </Link>
-              <Link
-                to="/contact"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/contact')
-                    ? 'border-primary text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                <FaEnvelope className="mr-2" />
-                Contact
-              </Link>
-              <Link
-                to="/about"
-                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  isActive('/about')
-                    ? 'border-primary text-gray-900'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                <FaInfoCircle className="mr-2" />
-                About
-              </Link>
+          <div className="flex items-center">
+            <Link to="/" className="text-2xl font-bold text-primary">Smart School</Link>
+          </div>
+          <div className="flex items-center space-x-6">
+            <Link 
+              to="/" 
+              className={`text-gray-600 hover:text-primary ${location.pathname === '/' ? 'text-primary font-semibold' : ''}`}
+            >
+              Home
+            </Link>
+            
+            {/* Show these links based on authentication and user type */}
+            {isLoggedIn && (
+              <>
+                {userType === 'student' && (
+                  <Link 
+                    to="/student/dashboard" 
+                    className={`text-gray-600 hover:text-primary ${location.pathname.startsWith('/student') ? 'text-primary font-semibold' : ''}`}
+                  >
+                    Student Dashboard
+                  </Link>
+                )}
+                {userType === 'teacher' && (
+                  <Link 
+                    to="/teacher/dashboard" 
+                    className={`text-gray-600 hover:text-primary ${location.pathname.startsWith('/teacher') ? 'text-primary font-semibold' : ''}`}
+                  >
+                    Teacher Dashboard
+                  </Link>
+                )}
+                <Link 
+                  to="/assignments" 
+                  className={`text-gray-600 hover:text-primary ${location.pathname === '/assignments' ? 'text-primary font-semibold' : ''}`}
+                >
+                  Assignments
+                </Link>
+              </>
+            )}
+            
+            <Link 
+              to="/about" 
+              className={`text-gray-600 hover:text-primary ${location.pathname === '/about' ? 'text-primary font-semibold' : ''}`}
+            >
+              About Us
+            </Link>
+
+            {/* Authentication buttons */}
+            <div className="flex items-center space-x-2">
+              {!isLoggedIn ? (
+                <>
+                  <Link 
+                    to="/login" 
+                    className={`px-6 py-2 rounded-md transition-colors duration-200 ${
+                      location.pathname === '/login'
+                        ? 'bg-primary text-white'
+                        : 'border border-primary text-primary hover:bg-primary/10'
+                    }`}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    to="/register" 
+                    className={`px-6 py-2 rounded-md transition-colors duration-200 ${
+                      location.pathname === '/register'
+                        ? 'bg-primary text-white'
+                        : 'border border-primary text-primary hover:bg-primary/10'
+                    }`}
+                  >
+                    Register
+                  </Link>
+                </>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition-colors duration-200"
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div className="sm:hidden">
-        <div className="pt-2 pb-3 space-y-1">
-          <Link
-            to="/"
-            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-              isActive('/')
-                ? 'bg-primary-50 border-primary text-primary-700'
-                : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <FaHome className="inline-block mr-2" />
-            Home
-          </Link>
-          <Link
-            to="/students"
-            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-              isActive('/students')
-                ? 'bg-primary-50 border-primary text-primary-700'
-                : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <FaUserGraduate className="inline-block mr-2" />
-            Students
-          </Link>
-          <Link
-            to="/login"
-            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-              isActive('/login')
-                ? 'bg-primary-50 border-primary text-primary-700'
-                : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <FaChalkboardTeacher className="inline-block mr-2" />
-            Teacher
-          </Link>
-          <Link
-            to="/contact"
-            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-              isActive('/contact')
-                ? 'bg-primary-50 border-primary text-primary-700'
-                : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <FaEnvelope className="inline-block mr-2" />
-            Contact
-          </Link>
-          <Link
-            to="/about"
-            className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-              isActive('/about')
-                ? 'bg-primary-50 border-primary text-primary-700'
-                : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <FaInfoCircle className="inline-block mr-2" />
-            About
-          </Link>
         </div>
       </div>
     </nav>

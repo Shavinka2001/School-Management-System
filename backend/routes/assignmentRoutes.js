@@ -7,7 +7,8 @@ const {
   updateAssignment,
   deleteAssignment,
   getTeacherStats,
-  generateReport
+  generateReport,
+  generateGamifiedActivity
 } = require('../controllers/assignmentController');
 
 // Optional: Add authentication middleware
@@ -17,6 +18,7 @@ const {
 router.get('/', getAssignments);
 router.get('/stats', getTeacherStats);
 router.get('/report', generateReport);
+router.post('/gamify', generateGamifiedActivity);
 router.get('/:id', getAssignment);
 router.post('/', createAssignment);
 router.put('/:id', updateAssignment);
