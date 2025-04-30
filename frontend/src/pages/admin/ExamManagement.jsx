@@ -1,11 +1,46 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSearch, FaDownload } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import axios from 'axios';
+import Dashboard from '../../components/admin/Dashboard';
+
+// === BACKEND SERVICES ===
+const API_URL = 'http://localhost:5000/api/exams';
+
+const examService = {
+    getAllExams: async () => {
+        const response = await axios.get(API_URL);
+        return response.data;
+    },
+    createExam: async (examData) => {
+        const response = await axios.post(API_URL, examData);
+        return response.data;
+    },
+    updateExam: async (id, examData) => {
+        const response = await axios.put(`${API_URL}/${id}`, examData);
+        return response.data;
+    },
+    deleteExam: async (id) => {
+        const response = await axios.delete(`${API_URL}/${id}`);
+        return response.data;
+    }
+};
 
 const ExamManagement = () => {
-    // Validation functions
+    const today = new Date().toISOString().split('T')[0];
+
+    const [exams, setExams] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [currentExam, setCurrentExam] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [formData, setFormData] = useState({
+        subject: '', date: '', time: '', venue: '', duration: ''
+    });
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, examId: null });
+
+    // === INPUT VALIDATIONS ===
     const handleSubjectKeyDown = (e) => {
         if (!/^[a-zA-Z0-9 ]$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
             e.preventDefault();
@@ -19,59 +54,46 @@ const ExamManagement = () => {
     };
 
     const handleDurationKeyDown = (e) => {
-        if (!/^[0-9hrmHRM ]$/.test(e.key) &&
-            e.key !== 'Backspace' &&
-            e.key !== 'Delete' &&
-            e.key !== 'Tab') {
+        if (!/^[0-9hrmHRM ]$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
             e.preventDefault();
         }
     };
 
     const validateDuration = (value) => {
-        const durationPattern = /^(\d+\s*(hour|hr|h|minute|min|m)s?\s*)+$/i;
-        return durationPattern.test(value);
+        const pattern = /^(\d+\s*(hour|hr|h|minute|min|m)s?\s*)+$/i;
+        return pattern.test(value);
     };
 
-    const today = new Date().toISOString().split('T')[0];
+    // === FETCH EXAMS ON MOUNT ===
+    useEffect(() => {
+        const fetchExams = async () => {
+            try {
+                const data = await examService.getAllExams();
+                setExams(data);
+            } catch (error) {
+                console.error("Error fetching exams:", error);
+            }
+        };
+        fetchExams();
+    }, []);
 
-    const [exams, setExams] = useState([
-        {
-            id: 1,
-            subject: 'Mathematics',
-            date: '2024-04-01',
-            time: '09:00',
-            venue: 'Room 101',
-            duration: '2 hours'
-        }
-    ]);
-
-    const [showModal, setShowModal] = useState(false);
-    const [currentExam, setCurrentExam] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [formData, setFormData] = useState({
-        subject: '',
-        date: '',
-        time: '',
-        venue: '',
-        duration: ''
-    });
-
-    const filteredExams = exams.filter(exam =>
-        exam.subject.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const handleSubmit = (e) => {
+    // === HANDLE FORM SUBMIT ===
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (currentExam) {
-            setExams(exams.map(exam =>
-                exam.id === currentExam.id ? { ...formData, id: currentExam.id } : exam
-            ));
-        } else {
-            setExams([...exams, { ...formData, id: Date.now() }]);
+        try {
+            if (currentExam) {
+                const updated = await examService.updateExam(currentExam._id, formData);
+                setExams(exams.map(exam => exam._id === currentExam._id ? updated : exam));
+            } else {
+                const created = await examService.createExam(formData);
+                setExams([...exams, created]);
+            }
+            setShowModal(false);
+            setCurrentExam(null);
+            setFormData({ subject: '', date: '', time: '', venue: '', duration: '' });
+        } catch (err) {
+            console.error("Error saving exam:", err);
         }
-        setShowModal(false);
-        setCurrentExam(null);
-        setFormData({ subject: '', date: '', time: '', venue: '', duration: '' });
     };
 
     const handleEdit = (exam) => {
@@ -80,41 +102,30 @@ const ExamManagement = () => {
         setShowModal(true);
     };
 
-    const [deleteConfirm, setDeleteConfirm] = useState({
-        show: false,
-        examId: null
-    });
-
     const handleDelete = (id) => {
         setDeleteConfirm({ show: true, examId: id });
     };
 
-    const confirmDelete = () => {
-        setExams(exams.filter(exam => exam.id !== deleteConfirm.examId));
-        setDeleteConfirm({ show: false, examId: null });
+    const confirmDelete = async () => {
+        try {
+            await examService.deleteExam(deleteConfirm.examId);
+            setExams(exams.filter(exam => exam._id !== deleteConfirm.examId));
+            setDeleteConfirm({ show: false, examId: null });
+        } catch (error) {
+            console.error("Error deleting exam:", error);
+        }
     };
 
+    // === DOWNLOAD PDF ===
     const downloadTimetable = () => {
         const doc = new jsPDF();
-
-        // Add title
         doc.setFontSize(18);
         doc.text("Exam Timetable", 14, 16);
-
-        // Prepare table data
         const headers = ['Subject', 'Date', 'Time', 'Venue', 'Duration'];
-        const tableData = exams.map(exam => [
-            exam.subject,
-            exam.date,
-            exam.time,
-            exam.venue,
-            exam.duration
-        ]);
-
-        // Add table using autoTable
+        const body = exams.map(e => [e.subject, e.date, e.time, e.venue, e.duration]);
         autoTable(doc, {
             head: [headers],
-            body: tableData,
+            body,
             startY: 25,
             theme: 'grid',
             headStyles: {
@@ -124,22 +135,16 @@ const ExamManagement = () => {
             },
             styles: {
                 fontSize: 10,
-                cellPadding: 3,
-                overflow: 'linebreak'
-            },
-            columnStyles: {
-                0: { cellWidth: 50 },
-                1: { cellWidth: 30 },
-                2: { cellWidth: 20 },
-                3: { cellWidth: 40 },
-                4: { cellWidth: 30 }
+                cellPadding: 3
             }
         });
-
-        // Save PDF
-        const fileName = `exam-timetable-${new Date().toISOString().split('T')[0]}.pdf`;
-        doc.save(fileName);
+        doc.save(`exam-timetable-${new Date().toISOString().split('T')[0]}.pdf`);
     };
+
+    const filteredExams = exams.filter(exam =>
+        exam.subject.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
@@ -178,6 +183,8 @@ const ExamManagement = () => {
                 </div>
             </div>
 
+            <Dashboard exams={exams} />
+
             {/* Table Section */}
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div className="overflow-x-auto">
@@ -193,7 +200,7 @@ const ExamManagement = () => {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {filteredExams.map((exam) => (
-                                <tr key={exam.id} className="hover:bg-gray-50 transition-colors">
+                                <tr key={exam._id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">{exam.subject}</td>
                                     <td className="px-6 py-4">{exam.date}</td>
                                     <td className="px-6 py-4">{exam.time}</td>
@@ -207,7 +214,7 @@ const ExamManagement = () => {
                                                 <FaEdit className="w-5 h-5" />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(exam.id)}
+                                                onClick={() => handleDelete(exam._id)}
                                                 className="text-red-900 cursor-pointer transition-colors"
                                             >
                                                 <FaTrash className="w-5 h-5" />

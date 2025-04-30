@@ -10,7 +10,7 @@ const Sidebar = () => {
     const menuItems = [
         { path: '/', name: 'Dashboard', icon: FaHome },
         { path: '/exams', name: 'Exam Management', icon: FaBook },
-        { path: '/schedule', name: 'Schedule', icon: FaCalendarAlt },
+
     ];
 
     const isActiveLink = (path) => location.pathname === path;
@@ -28,7 +28,7 @@ const Sidebar = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="text-white text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent"
+                            className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent"
                         >
                             Smart School
                         </motion.h2>
