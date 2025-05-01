@@ -129,7 +129,7 @@ function ClassManagement() {
                   Create New Class
                 </h1>
                 <p className="mt-1 text-sm text-gray-600">
-                  Add a new class to your Smart School Management 
+                  Add a new class to your Smart School 
                 </p>
               </div>
               <div className="mt-4 md:mt-0 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
