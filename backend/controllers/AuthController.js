@@ -49,3 +49,8 @@ export const Login = async (req, res, next) => {
       console.error(error);
     }
   };  
+  
+// Optional: Add the userVerification function if needed
+export const userVerification = (req, res) => {
+    res.json({ message: "User verification is successful" });
+  };
