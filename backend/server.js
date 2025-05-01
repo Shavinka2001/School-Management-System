@@ -18,7 +18,10 @@ mongoose.connect(MONGODB_URI)
 
 // Routes
 const classRoutes = require('./routes/classRoutes');
+const pollRoutes = require('./routes/pollRoutes');
+
 app.use('/api/classes', classRoutes);
+app.use('/api/polls', pollRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
