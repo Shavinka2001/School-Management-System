@@ -140,6 +140,22 @@ const Signup = () => {
             Sign Up
           </button>
         </form>
+
+                {/* Link to login page */}
+                <p className="text-sm text-gray-600 text-center mt-4">
+          Already have an account?{" "}
+          <Link
+            to={"/login"}
+            className="text-indigo-600 hover:underline font-medium"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
+
+      {/* Toast notification container */}
+      <ToastContainer />
+    </div>
     )
 
 }  
