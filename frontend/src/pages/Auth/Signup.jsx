@@ -5,5 +5,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
-    const navigate = useNavigate(); // Hook to navigate programmatically
+    const navigate = useNavigate(); // Hook to 
+    
+     // State to handle input values for the form
+  const [inputValue, setInputValue] = useState({
+    email: "",
+    password: "",
+    username: "",
+  });
 }  
