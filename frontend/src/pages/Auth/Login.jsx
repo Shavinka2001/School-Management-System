@@ -31,4 +31,14 @@ const Login = () => {
         position: "bottom-left",
     });
 
+    // Show success toast and navigate after delay
+    const handleSuccess = (msg) => {
+        toast.success(msg, {
+        position: "bottom-left",
+    });
+    setTimeout(() => {
+    navigate("/"); // Redirect to home page on success
+    }, 1000);
+  };
+
 }
