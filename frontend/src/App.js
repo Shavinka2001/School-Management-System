@@ -6,6 +6,7 @@ import ClassList from './pages/ClassList';
 import EditClass from './pages/EditClass';
 import Sections from './pages/Sections';
 import Students from './pages/Students';
+import ClassPolls from './pages/ClassPolls';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/edit-class/:id" element={<EditClass />} />
             <Route path="/sections" element={<Sections />} />
             <Route path="/students" element={<Students />} />
+            <Route path="/class-polls/:id" element={<ClassPolls />} />
           </Routes>
         </main>
       </div>
