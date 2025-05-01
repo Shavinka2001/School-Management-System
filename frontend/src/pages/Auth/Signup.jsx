@@ -37,5 +37,13 @@ const Signup = () => {
         const handleSubmit = async (e) => {
             e.preventDefault();
 
-
+            try {
+                // Send signup data to the backend
+                const { data } = await axios.post(
+                  "http://localhost:4000/signup", // Your backend signup endpoint
+                  {
+                    ...inputValue,
+                  },
+                  { withCredentials: true } // Allow sending/receiving cookies
+                );   
 }  
