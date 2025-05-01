@@ -40,5 +40,37 @@ const Login = () => {
     navigate("/"); // Redirect to home page on success
     }, 1000);
   };
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        // Simple validation
+        if (!email || !password) {
+            handleError("Both email and password are required!");
+            return;
+        }
+        
+        try {
+            // Send login request to backend
+            const { data } = await axios.post(
+              "http://localhost:4000/login", // Replace with your actual backend login route
+              {
+                ...inputValue,
+              },
+              { withCredentials: true } // Include cookies in request
+            );
+      
+            console.log("Login response:", data); // Debug line
+      
+            const { success, message } = data;
+            if (success) {
+              handleSuccess(message); // If login is successful, show message and redirect
+            } else {
+              handleError(message); // If login fails, show error
+            }
+          } catch (error) {
+            console.error("Login error:", error); // Log error to console
+            handleError("An error occurred. Please try again."); // Show generic error message
+          }
 
 }
