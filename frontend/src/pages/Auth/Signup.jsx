@@ -5,17 +5,18 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
-    const navigate = useNavigate(); // Hook to 
-    
-     // State to handle input values for the form
+  const navigate = useNavigate(); // Hook for navigation
+
+  // State to handle input values for the form
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
     username: "",
   });
 
-  const { email, password, username } = inputValue; 
+  const { email, password, username } = inputValue;
 
+  // Handle input field changes
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setInputValue({
@@ -24,58 +25,60 @@ const Signup = () => {
     });
   };
 
+  // Show error toast
   const handleError = (err) =>
     toast.error(err, {
       position: "bottom-left",
     });
 
-    const handleSuccess = (msg) =>
-        toast.success(msg, {
-          position: "bottom-right",
-        });
-    
-        const handleSubmit = async (e) => {
-            e.preventDefault();
+  // Show success toast
+  const handleSuccess = (msg) =>
+    toast.success(msg, {
+      position: "bottom-right",
+    });
 
-            try {
-                // Send signup data to the backend
-                const { data } = await axios.post(
-                  "http://localhost:4000/signup", // Your backend signup endpoint
-                  {
-                    ...inputValue,
-                  },
-                  { withCredentials: true } // Allow sending/receiving cookies
-                );   
-                const { success, message } = data;
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.post(
+        "http://localhost:4000/signup",
+        { ...inputValue },
+        { withCredentials: true }
+      );
+
+      const { success, message } = data;
 
       if (success) {
-        handleSuccess(message); // Show success message
-        // Redirect to login page after a short delay
+        handleSuccess(message);
         setTimeout(() => {
           navigate("/login");
         }, 1000);
       } else {
-        handleError(message); // Show error message if backend responds with error
+        handleError(message);
       }
     } catch (error) {
-      console.log(error); // Log error for debugging
+      console.log(error);
     }
+
     // Reset input fields
     setInputValue({
-        ...inputValue,
-        email: "",
-        password: "",
-        username: "",
-      });
-    };
+      ...inputValue,
+      email: "",
+      password: "",
+      username: "",
+    });
+  };
 
-    return(
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       {/* Signup card container */}
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Create Your Account
         </h2>
+
         {/* Signup form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email input field */}
@@ -141,8 +144,8 @@ const Signup = () => {
           </button>
         </form>
 
-                {/* Link to login page */}
-                <p className="text-sm text-gray-600 text-center mt-4">
+        {/* Link to login page */}
+        <p className="text-sm text-gray-600 text-center mt-4">
           Already have an account?{" "}
           <Link
             to={"/login"}
@@ -156,8 +159,7 @@ const Signup = () => {
       {/* Toast notification container */}
       <ToastContainer />
     </div>
-    );
-
-}  ;
+  );
+};
 
 export default Signup;
