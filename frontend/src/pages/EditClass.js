@@ -15,9 +15,10 @@ function EditClass() {
     isActive: true,
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchClassData();
-  }, [id]);
+  }, []);
 
   const fetchClassData = async () => {
     try {
