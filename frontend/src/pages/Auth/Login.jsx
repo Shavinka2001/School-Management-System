@@ -73,4 +73,11 @@ const Login = () => {
             handleError("An error occurred. Please try again."); // Show generic error message
           }
 
+         // Reset input fields
+            setInputValue({
+                email: "",
+                password: "",
+        });  
+    };
+
 }
