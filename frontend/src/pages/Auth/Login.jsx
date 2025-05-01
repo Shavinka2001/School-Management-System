@@ -3,3 +3,7 @@ import { Link, useNavigate } from "react-router-dom"; // For navigation and link
 import axios from "axios"; // For making HTTP requests
 import { ToastContainer, toast } from "react-toastify"; // For showing notifications
 import "react-toastify/dist/ReactToastify.css"; // Toast styles
+
+const Login = () => {
+    const navigate = useNavigate(); // React Router hook to navigate to other routes
+}
