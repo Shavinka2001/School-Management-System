@@ -71,6 +71,7 @@ const Home = () => {
                 <p className="mt-2 text-gray-500">
                   Streamline teacher workflows with grade management and lesson planning tools.
                 </p>
+               
               </div>
 
               {/* Feature 3 */}
@@ -83,7 +84,10 @@ const Home = () => {
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">Attendance Tracking</h3>
                 <p className="mt-2 text-gray-500">
                   Automated attendance tracking with real-time notifications and reports.
+
+                  
                 </p>
+               
               </div>
             </div>
           </div>

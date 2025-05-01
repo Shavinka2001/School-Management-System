@@ -3,33 +3,36 @@ const mongoose = require('mongoose');
 const teacherSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: [true, 'Name is required'],
+    trim: true,
   },
   email: {
     type: String,
-    required: true,
-    unique: true
-  },
-  phone: {
-    type: String,
-    required: true
+    required: [true, 'Email is required'],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    match: [/\S+@\S+\.\S+/, 'Invalid email format'],
   },
   subject: {
     type: String,
-    required: true
+    required: [true, 'Subject is required'],
+    trim: true,
   },
-  password: {
+  phone: {
     type: String,
-    required: true
+    required: [true, 'Phone is required'],
+    match: [/^\d{10}$/, 'Phone must be a 10-digit number'],
   },
-  photo: {
-    type: String,
-    default: ''
+  isActive: {
+    type: Boolean,
+    default: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+}, {
+  timestamps: true, // Adds createdAt and updatedAt fields
 });
 
-module.exports = mongoose.model('Teacher', teacherSchema); 
+// Index for case-insensitive search
+teacherSchema.index({ name: 'text', email: 'text', subject: 'text' });
+
+module.exports = mongoose.model('Teacher', teacherSchema);

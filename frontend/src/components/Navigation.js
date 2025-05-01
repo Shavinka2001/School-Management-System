@@ -97,6 +97,7 @@ const Navigation = () => {
                   >
                     Register
                   </Link>
+                  
                 </>
               ) : (
                 <button

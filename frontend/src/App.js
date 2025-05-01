@@ -7,6 +7,11 @@ import About from './pages/About';
 import Assignments from './pages/Assignments';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import TeacherForm from './pages/TeacherForm';
+import TeacherList from './pages/TeacherList';
+
+
 
 function App() {
   return (
@@ -16,11 +21,18 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
+          
           <Route path="/register" element={<Register />} />
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
           <Route path="/teacher/assignments" element={<Assignments />} />
           <Route path="/student/dashboard" element={<StudentDashboard />} />
           <Route path="/assignments" element={<Assignments />} />
+          <Route path="/dashboard" element={<Dashboard />} /> {/* Add this route */}
+          <Route path="/teacher-form" element={<TeacherForm />} /> {/* Add this route */}
+          <Route path="/teacher-list" element={<TeacherList />} /> {/* Add this route */}
+      
+           
+        
         </Routes>
       </div>
     </Router>
