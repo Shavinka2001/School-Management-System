@@ -60,5 +60,13 @@ const Signup = () => {
     } catch (error) {
       console.log(error); // Log error for debugging
     }
+    // Reset input fields
+    setInputValue({
+        ...inputValue,
+        email: "",
+        password: "",
+        username: "",
+      });
+    }
 
 }  
