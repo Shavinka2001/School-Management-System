@@ -46,4 +46,19 @@ const Signup = () => {
                   },
                   { withCredentials: true } // Allow sending/receiving cookies
                 );   
+                const { success, message } = data;
+
+      if (success) {
+        handleSuccess(message); // Show success message
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
+      } else {
+        handleError(message); // Show error message if backend responds with error
+      }
+    } catch (error) {
+      console.log(error); // Log error for debugging
+    }
+
 }  
