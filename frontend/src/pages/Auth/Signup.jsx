@@ -29,5 +29,10 @@ const Signup = () => {
       position: "bottom-left",
     });
 
+    const handleSuccess = (msg) =>
+        toast.success(msg, {
+          position: "bottom-right",
+        });
+
 
 }  
