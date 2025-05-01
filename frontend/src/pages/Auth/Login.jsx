@@ -25,4 +25,10 @@ const Login = () => {
         });
       };
 
+    // Show error toast
+    const handleError = (err) =>
+        toast.error(err, {
+        position: "bottom-left",
+    });
+
 }
