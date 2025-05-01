@@ -12,8 +12,17 @@ const Login = () => {
         email: "",
         password: "",
   });
-  
+
   // Destructure input values for easier access
   const { email, password } = inputValue;
+
+    // Handle input field changes
+    const handleOnChange = (e) => {
+        const { name, value } = e.target;
+        setInputValue({
+          ...inputValue,
+          [name]: value,
+        });
+      };
 
 }
