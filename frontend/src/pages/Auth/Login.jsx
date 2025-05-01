@@ -5,5 +5,11 @@ import { ToastContainer, toast } from "react-toastify"; // For showing notificat
 import "react-toastify/dist/ReactToastify.css"; // Toast styles
 
 const Login = () => {
-    const navigate = useNavigate(); // React Router hook to navigate to other routes
+    const navigate = useNavigate(); // React Router hook to 
+    
+    // State to manage form input values
+    const [inputValue, setInputValue] = useState({
+        email: "",
+        password: "",
+  });
 }
