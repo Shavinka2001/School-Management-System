@@ -1,5 +1,5 @@
-import User from "../Model/UserModel.js"; // Correct import with ESM
-import { createSecretToken } from "../util/SecretToken.js";
+import User from "../models/UserModel.js"; // Correct import with ESM
+import { createSecretToken } from "../utils/SecretToken.js"; // Correct import with ESM
 import bcrypt from "bcryptjs";
 
 // Signup function
@@ -49,7 +49,7 @@ export const Login = async (req, res, next) => {
       console.error(error);
     }
   };  
-  
+
 // Optional: Add the userVerification function if needed
 export const userVerification = (req, res) => {
     res.json({ message: "User verification is successful" });
