@@ -13,4 +13,7 @@ const Signup = () => {
     password: "",
     username: "",
   });
+
+  const { email, password, username } = inputValue; 
+
 }  
