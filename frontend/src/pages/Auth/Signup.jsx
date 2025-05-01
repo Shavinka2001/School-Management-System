@@ -156,6 +156,8 @@ const Signup = () => {
       {/* Toast notification container */}
       <ToastContainer />
     </div>
-    )
+    );
 
-}  
+}  ;
+
+export default Signup;
