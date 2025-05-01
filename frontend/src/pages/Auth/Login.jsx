@@ -12,4 +12,8 @@ const Login = () => {
         email: "",
         password: "",
   });
+  
+  // Destructure input values for easier access
+  const { email, password } = inputValue;
+
 }
