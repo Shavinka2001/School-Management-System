@@ -16,4 +16,12 @@ const Signup = () => {
 
   const { email, password, username } = inputValue; 
 
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue({
+      ...inputValue,
+      [name]: value,
+    });
+  };
+
 }  
