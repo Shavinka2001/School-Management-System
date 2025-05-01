@@ -223,7 +223,7 @@ function ClassManagement() {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Number of Students <span className="text-xs text-gray-500">(Max: 50)</span>
+                    Number of Student <span className="text-xs text-gray-500">(Max: 50)</span>
                   </label>
                   <div className="relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
