@@ -33,6 +33,9 @@ const Signup = () => {
         toast.success(msg, {
           position: "bottom-right",
         });
+    
+        const handleSubmit = async (e) => {
+            e.preventDefault();
 
 
 }  
