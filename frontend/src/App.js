@@ -7,23 +7,79 @@ import EditClass from './pages/EditClass';
 import Sections from './pages/Sections';
 import Students from './pages/Students';
 import ClassPolls from './pages/ClassPolls';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import About from './pages/About';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
     <Router>
-      <div className="flex min-h-screen bg-gray-100">
-        <Sidebar />
-        <main className="flex-1 p-8 ml-64">
-          <Routes>
-            <Route path="/" element={<ClassManagement />} />
-            <Route path="/class-list" element={<ClassList />} />
-            <Route path="/edit-class/:id" element={<EditClass />} />
-            <Route path="/sections" element={<Sections />} />
-            <Route path="/students" element={<Students />} />
-            <Route path="/class-polls/:id" element={<ClassPolls />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* Dashboard routes with sidebar */}
+        <Route path="/dashboard" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <Dashboard />
+            </main>
+          </div>
+        } />
+        <Route path="/class-management" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <ClassManagement />
+            </main>
+          </div>
+        } />
+        <Route path="/class-list" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <ClassList />
+            </main>
+          </div>
+        } />
+        <Route path="/edit-class/:id" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <EditClass />
+            </main>
+          </div>
+        } />
+        <Route path="/sections" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <Sections />
+            </main>
+          </div>
+        } />
+        <Route path="/students" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <Students />
+            </main>
+          </div>
+        } />
+        <Route path="/class-polls/:id" element={
+          <div className="flex min-h-screen bg-gray-100">
+            <Sidebar />
+            <main className="flex-1 p-8 ml-64">
+              <ClassPolls />
+            </main>
+          </div>
+        } />
+      </Routes>
     </Router>
   );
 }
