@@ -52,7 +52,7 @@ function ClassManagement() {
     if (name === 'numberOfStudents') {
       const numValue = parseInt(value, 10);
       if (numValue > 50) {
-        setError('Maximum number of students allowed is 50..');
+        setError('Maximum number of students allowed is 50');
         return;
       } else {
         setError('');
