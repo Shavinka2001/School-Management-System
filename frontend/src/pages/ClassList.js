@@ -77,7 +77,8 @@ function ClassList() {
   };
 
   const handleAddClass = () => {
-    navigate('/');  // Assuming this is the ClassManagement page route
+    // Explicitly navigate to class management page with full path to avoid routing issues
+    navigate('/class-management', { replace: false });
   };
 
   const handleManagePolls = (id) => {
@@ -160,15 +161,15 @@ function ClassList() {
                   </svg>
                   Add Class
                 </button>
-                <button
-                  onClick={generateReport}
+          <button
+            onClick={generateReport}
                   className="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-150"
-                >
+          >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                   </svg>
-                  Generate Report
-                </button>
+            Generate Report
+          </button>
               </div>
             </div>
           </div>
@@ -242,36 +243,36 @@ function ClassList() {
                 </svg>
               </button>
             )}
-          </div>
         </div>
+      </div>
 
         {/* Classes Table */}
         <div className="bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                <tr>
+            <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Teacher Name
-                  </th>
+                Teacher Name
+              </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Subject
-                  </th>
+                Subject
+              </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Number of Students
-                  </th>
+                Number of Students
+              </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Section
-                  </th>
+                Section
+              </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Status
-                  </th>
+                Status
+              </th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
                 {filteredClasses.length > 0 ? (
                   filteredClasses.map((classItem, index) => (
                     <tr key={classItem._id} className={`hover:bg-indigo-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
@@ -284,31 +285,31 @@ function ClassList() {
                             <div className="text-sm font-medium text-gray-900">{classItem.teacherName}</div>
                           </div>
                         </div>
-                      </td>
+                </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{classItem.subject}</div>
-                      </td>
+                </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
                           <span className="inline-flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                               <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                             </svg>
-                            {classItem.numberOfStudents}
+                  {classItem.numberOfStudents}
                           </span>
                         </div>
-                      </td>
+                </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{classItem.section}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
                           className={`px-3 py-1.5 inline-flex items-center text-xs font-medium rounded-full ${
-                            classItem.isActive
+                      classItem.isActive
                               ? 'bg-green-100 text-green-800 border border-green-200'
                               : 'bg-red-100 text-red-800 border border-red-200'
-                          }`}
-                        >
+                    }`}
+                  >
                           {classItem.isActive ? (
                             <>
                               <span className="w-2 h-2 rounded-full bg-green-500 mr-1.5"></span>
@@ -320,16 +321,16 @@ function ClassList() {
                               Inactive
                             </>
                           )}
-                        </span>
-                      </td>
+                  </span>
+                </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
-                          <button
-                            onClick={() => handleEdit(classItem._id)}
+                  <button
+                    onClick={() => handleEdit(classItem._id)}
                             className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors duration-150"
-                          >
-                            Edit
-                          </button>
+                  >
+                    Edit
+                  </button>
                           {classItem.isActive ? (
                             <button
                               onClick={() => handleManagePolls(classItem._id)}
@@ -360,12 +361,12 @@ function ClassList() {
                               </span>
                             </button>
                           )}
-                          <button
+                  <button
                             onClick={() => openDeleteModal(classItem._id, classItem.teacherName, classItem.subject)}
                             className="px-3 py-1.5 bg-red-50 text-red-600 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-colors duration-150"
-                          >
-                            Delete
-                          </button>
+                  >
+                    Delete
+                  </button>
                         </div>
                       </td>
                     </tr>
@@ -386,11 +387,11 @@ function ClassList() {
                           Add Your First Class
                         </button>
                       </div>
-                    </td>
-                  </tr>
+                </td>
+              </tr>
                 )}
-              </tbody>
-            </table>
+          </tbody>
+        </table>
           </div>
           
           {/* Table Footer */}
