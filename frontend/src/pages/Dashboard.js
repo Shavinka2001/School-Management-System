@@ -2,7 +2,20 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import TeacherForm from './TeacherForm';
 import TeacherList from './TeacherList';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';  
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from 'recharts';
+
 const Dashboard = () => {
   const [teachers, setTeachers] = useState([]);
   const [search, setSearch] = useState('');
@@ -21,6 +34,20 @@ const Dashboard = () => {
 
   const activeTeachers = teachers.filter((teacher) => teacher.isActive).length;
   const inactiveTeachers = teachers.length - activeTeachers;
+
+  // Static Chart Data
+  const pieData = [
+    { name: 'Active', value: activeTeachers },
+    { name: 'Inactive', value: inactiveTeachers },
+  ];
+  const COLORS = ['#10B981', '#EF4444'];
+
+  const barData = [
+    { name: 'Math', count: 8 },
+    { name: 'Science', count: 5 },
+    { name: 'English', count: 7 },
+    { name: 'History', count: 3 },
+  ];
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -54,6 +81,43 @@ const Dashboard = () => {
           <div className="bg-white p-6 rounded-xl shadow border-l-4 border-red-500">
             <h2 className="text-lg font-semibold text-gray-700">Inactive Teachers</h2>
             <p className="text-3xl font-bold text-red-500 mt-2">{inactiveTeachers}</p>
+          </div>
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          {/* Pie Chart */}
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-lg font-semibold text-gray-700 mb-4">Teacher Activity Status</h2>
+            <PieChart width={300} height={250}>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                outerRadius={80}
+                dataKey="value"
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </div>
+
+          {/* Bar Chart */}
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-lg font-semibold text-gray-700 mb-4">Teachers by Subject</h2>
+            <BarChart width={400} height={250} data={barData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#3B82F6" />
+            </BarChart>
           </div>
         </div>
 
