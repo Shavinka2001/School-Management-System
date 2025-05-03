@@ -24,6 +24,7 @@ const teacherSchema = new mongoose.Schema({
     required: [true, 'Phone is required'],
     match: [/^\d{10}$/, 'Phone must be a 10-digit number'],
   },
+  
   isActive: {
     type: Boolean,
     default: true,
