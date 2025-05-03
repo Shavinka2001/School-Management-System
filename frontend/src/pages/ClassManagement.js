@@ -77,7 +77,7 @@ function ClassManagement() {
     
     setFormData({
       ...formData,
-      [name]: name === 'IsActive' ? checked : value,
+      [name]: name === 'isActive' ? checked : value,
     });
   };
 
