@@ -156,7 +156,7 @@ function ClassPolls() {
   };
 
   const handleDeletePoll = async (pollId) => {
-    if (!window.confirm('Are you sure you want to delete this poll?')) {
+    if (!window.confirm('Are you sure you want to delete this poll?.')) {
       return;
     }
 
