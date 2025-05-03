@@ -54,20 +54,22 @@ const TeacherList = ({ teachers, setTeachers }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4">Teacher List</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div className="bg-white p-8 rounded-xl shadow-lg max-w-6xl mx-auto my-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Teacher List</h2>
+      {error && (
+        <p className="text-red-500 bg-red-50 p-3 rounded-md mb-6">{error}</p>
+      )}
       {editTeacher && (
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">Edit Teacher</h3>
-          <div>
+        <div className="mb-8 bg-gray-50 p-6 rounded-lg">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">Edit Teacher</h3>
+          <div className="grid gap-4">
             <input
               type="text"
               name="name"
               value={editTeacher.name}
               onChange={handleChange}
               placeholder="Name"
-              className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             />
             <input
               type="email"
@@ -75,7 +77,7 @@ const TeacherList = ({ teachers, setTeachers }) => {
               value={editTeacher.email}
               onChange={handleChange}
               placeholder="Email"
-              className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             />
             <input
               type="text"
@@ -83,7 +85,7 @@ const TeacherList = ({ teachers, setTeachers }) => {
               value={editTeacher.subject}
               onChange={handleChange}
               placeholder="Subject"
-              className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             />
             <input
               type="text"
@@ -91,84 +93,88 @@ const TeacherList = ({ teachers, setTeachers }) => {
               value={editTeacher.phone}
               onChange={handleChange}
               placeholder="Phone"
-              className="w-full p-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             />
-            <button
-              onClick={handleUpdate}
-              className="bg-blue-500 text-white p-2 rounded mr-2 hover:bg-blue-600 transition duration-200"
-            >
-              Update
-            </button>
-            <button
-              onClick={() => setEditTeacher(null)}
-              className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600 transition duration-200"
-            >
-              Cancel
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={handleUpdate}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => setEditTeacher(null)}
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Subject</th>
-            <th className="border p-2">Phone</th>
-            <th className="border p-2">Status</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {teachers.length === 0 ? (
-            <tr>
-              <td colSpan="6" className="border p-2 text-center">
-                No teachers found
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100 text-gray-700">
+              <th className="p-4 text-left font-semibold">Name</th>
+              <th className="p-4 text-left font-semibold">Email</th>
+              <th className="p-4 text-left font-semibold">Subject</th>
+              <th className="p-4 text-left font-semibold">Phone</th>
+              <th className="p-4 text-left font-semibold">Status</th>
+              <th className="p-4 text-left font-semibold">Actions</th>
             </tr>
-          ) : (
-            teachers.map((teacher) => (
-              <tr key={teacher._id}>
-                <td className="border p-2">{teacher.name}</td>
-                <td className="border p-2">{teacher.email}</td>
-                <td className="border p-2">{teacher.subject}</td>
-                <td className="border p-2">{teacher.phone}</td>
-                <td className="border p-2">
-                  {teacher.isActive ? (
-                    <span className="text-green-600">Active</span>
-                  ) : (
-                    <span className="text-red-600">Inactive</span>
-                  )}
-                </td>
-                <td className="border p-2">
-                  <button
-                    onClick={() => handleEdit(teacher)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600 transition duration-200"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(teacher._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded mr-2 hover:bg-red-600 transition duration-200"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => handleToggleStatus(teacher._id)}
-                    className={`px-2 py-1 rounded text-white ${
-                      teacher.isActive
-                        ? 'bg-orange-500 hover:bg-orange-600'
-                        : 'bg-green-500 hover:bg-green-600'
-                    } transition duration-200`}
-                  >
-                    {teacher.isActive ? 'Deactivate' : 'Activate'}
-                  </button>
+          </thead>
+          <tbody>
+            {teachers.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="p-4 text-center text-gray-500">
+                  No teachers found
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              teachers.map((teacher) => (
+                <tr key={teacher._id} className="hover:bg-gray-50 transition">
+                  <td className="p-4 border-t">{teacher.name}</td>
+                  <td className="p-4 border-t">{teacher.email}</td>
+                  <td className="p-4 border-t">{teacher.subject}</td>
+                  <td className="p-4 border-t">{teacher.phone}</td>
+                  <td className="p-4 border-t">
+                    {teacher.isActive ? (
+                      <span className="text-green-600 font-medium">Active</span>
+                    ) : (
+                      <span className="text-red-600 font-medium">Inactive</span>
+                    )}
+                  </td>
+                  <td className="p-4 border-t flex gap-2">
+                    <button
+                      onClick={() => handleEdit(teacher)}
+                      className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition duration-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(teacher._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-200"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => handleToggleStatus(teacher._id)}
+                      className={`px-3 py-1 rounded-lg text-white ${
+                        teacher.isActive
+                          ? 'bg-orange-500 hover:bg-orange-600'
+                          : 'bg-green-500 hover:bg-green-600'
+                      } transition duration-200`}
+                    >
+                      {teacher.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
