@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
 import Navigation from '../components/Navigation';
 import ChatBot from '../components/ChatBot';
 import EditProfileModal from '../components/EditProfileModal';
 import { toast } from 'react-toastify';
+
+// Register Chart.js components
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -88,6 +93,53 @@ const TeacherDashboard = () => {
       phone: updatedData.phone
     });
     toast.success('Profile updated successfully!');
+  };
+
+  // Pie Chart Data
+  const pieChartData = {
+    labels: ['Total Assignments', 'Pending Review', 'Completed'],
+    datasets: [
+      {
+        data: [stats.totalAssignments, stats.pendingReview, stats.completed],
+        backgroundColor: ['#3B82F6', '#FBBF24', '#10B981'],
+        hoverBackgroundColor: ['#2563EB', '#F59E0B', '#059669'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Bar Chart Data
+  const barChartData = {
+    labels: ['Total Assignments', 'Pending Review', 'Completed'],
+    datasets: [
+      {
+        label: 'Assignment Stats',
+        data: [stats.totalAssignments, stats.pendingReview, stats.completed],
+        backgroundColor: ['#3B82F6', '#FBBF24', '#10B981'],
+        borderColor: ['#2563EB', '#F59E0B', '#059669'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          font: {
+            size: 14,
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: '#1F2937',
+        titleFont: { size: 14 },
+        bodyFont: { size: 12 },
+      },
+    },
   };
 
   if (!teacher) {
@@ -184,6 +236,39 @@ const TeacherDashboard = () => {
           </div>
         </div>
 
+        {/* Statistics Charts */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Assignment Statistics</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="h-80">
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Distribution of Assignments</h3>
+              {loading ? (
+                <div className="flex items-center justify-center h-full">
+                  <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              ) : (
+                <Pie data={pieChartData} options={chartOptions} />
+              )}
+            </div>
+            <div className="h-80">
+              <h3 className="text-lg font-medium text-gray-700 mb-4">Assignment Status Comparison</h3>
+              {loading ? (
+                <div className="flex items-center justify-center h-full">
+                  <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              ) : (
+                <Bar data={barChartData} options={chartOptions} />
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
@@ -268,4 +353,4 @@ const TeacherDashboard = () => {
   );
 };
 
-export default TeacherDashboard; 
+export default TeacherDashboard;
