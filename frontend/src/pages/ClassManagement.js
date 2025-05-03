@@ -35,7 +35,7 @@ function ClassManagement() {
     const sectionLetter = match[2];
     
     if (grade < 1 || grade > MAX_GRADE) {
-      return `Grade must be between 1 and ${MAX_GRADE}`;
+      return `Grade must be between 10 and ${MAX_GRADE}`;
     }
     
     if (!VALID_SECTIONS.includes(sectionLetter)) {
@@ -237,8 +237,8 @@ function ClassManagement() {
                       value={formData.numberOfStudents}
                       onChange={handleInputChange}
                       required
-                      placeholder="Enter student count (1-50)"
-                      min="1"
+                      placeholder="Enter student count (10-50)"
+                      min="10"
                       max="50"
                       className={`pl-10 block w-full border ${error && error.includes('students') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'} rounded-lg py-3 transition-colors duration-200`}
                     />
