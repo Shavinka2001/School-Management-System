@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
+import ChatBot from '../../components/ChatBot';
 import {
     HomeIcon,
     UserCircleIcon,
@@ -237,6 +238,9 @@ function StudentLayout() {
                     </div>
                 </main>
             </div>
+
+            {/* Add ChatBot component */}
+            <ChatBot />
         </div>
     );
 }
