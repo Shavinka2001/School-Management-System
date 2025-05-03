@@ -193,7 +193,7 @@ function ClassManagement() {
                       value={formData.teacherName}
                       onChange={handleInputChange}
                       required
-                      placeholder="Enter teacher's full name"
+                      placeholder="Enter teacher's name"
                       className="pl-10 block w-full border border-gray-300 rounded-lg py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200"
                     />
                   </div>
