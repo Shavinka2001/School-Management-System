@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import TeacherForm from './pages/TeacherForm';
 import TeacherList from './pages/TeacherList';
+import ChatBot from './components/ChatBot';
 
 
 
@@ -30,7 +31,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} /> {/* Add this route */}
           <Route path="/teacher-form" element={<TeacherForm />} /> {/* Add this route */}
           <Route path="/teacher-list" element={<TeacherList />} /> {/* Add this route */}
-      
+          <Route path="/Chatbot" element={<ChatBot />} />
            
         
         </Routes>
